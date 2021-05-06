@@ -29,8 +29,6 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Listeners;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-
 @SuppressWarnings("deprecation")
 @Listeners(TestListener.class)
 public class Configuration implements IAnnotationTransformer {
@@ -63,7 +61,6 @@ public class Configuration implements IAnnotationTransformer {
 	
 	@BeforeSuite
 	public void beforeSuite() {
-		WebDriverManager.chromedriver().setup();
 		driver = new EventWebDriver(WebDriverFactory.getWebDriver());
 		explicitlyWait = new WebDriverWait(driver, Duration.ofSeconds(Util.AJAX_TIMEOUT));
 		mainWindow = driver.getWindowHandle();

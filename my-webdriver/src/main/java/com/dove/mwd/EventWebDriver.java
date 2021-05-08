@@ -3,6 +3,8 @@ package com.dove.mwd;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
+
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -46,12 +48,12 @@ public class EventWebDriver extends EventFiringWebDriver {
 		try {
 			new WebDriverWait(this, Duration.ofSeconds(Util.AJAX_TIMEOUT)).until(jQueryLoadFinished());
 		} catch (NotDefinedException e) {
-			logger.warn("{}: '{}'", e.getLocalizedMessage(), this.getCurrentUrl());
+			logger.warn("{}: {}", e.getMessage(), getCurrentUrl());
 		}
 		try {
 			new WebDriverWait(this, Duration.ofSeconds(Util.AJAX_TIMEOUT)).until(angularLoadFinished());
 		} catch (NotDefinedException e) {
-			logger.warn("{}: '{}'", e.getLocalizedMessage(), this.getCurrentUrl());
+			logger.warn("{}: {}", e.getMessage(), getCurrentUrl());
 		}
 		jsLoadFinished();
 		loadEventFinished();
@@ -63,12 +65,12 @@ public class EventWebDriver extends EventFiringWebDriver {
 	 * @return true or false.
 	 */
 	public ExpectedCondition<Boolean> jQueryLoadFinished() {
-		if (Boolean.valueOf(this
-				.executeScript("return window.jQuery !== undefined").toString()) == false) {
-			throw new NotDefinedException("jQuery not defined.");
-		}
-		return arg0 -> Boolean.valueOf(this
-				.executeScript("return jQuery.active === 0").toString());
+		return d -> {
+			if (!Boolean.valueOf(((JavascriptExecutor) d).executeScript("return window.jQuery !== undefined").toString())) {
+				throw new NotDefinedException("jQuery not defined");
+			}
+			return Boolean.valueOf(((JavascriptExecutor) d).executeScript("return jQuery.active === 0").toString());
+		};
 	}
 
 	/**
@@ -77,16 +79,15 @@ public class EventWebDriver extends EventFiringWebDriver {
 	 * @return true or false.
 	 */
 	public ExpectedCondition<Boolean> angularLoadFinished() {
-		if (Boolean.valueOf(this
-				.executeScript("return (window.angular !== undefined)").toString()) == false) {
-			throw new NotDefinedException("Angular not defined.");
-		}
-		if (Boolean.valueOf(this
-				.executeScript("return (angular.element(document).injector() !== undefined)").toString()) == false) {
-			throw new NotDefinedException("Injector not defined.");
-		}
-		return arg0 -> Boolean.valueOf(this
-				.executeScript("return (angular.element(document).injector().get('$http').pendingRequests.length === 0)").toString());
+		return d -> {
+			if (!Boolean.valueOf(((JavascriptExecutor) d).executeScript("return window.angular !== undefined").toString())) {
+				throw new NotDefinedException("Angular not defined");
+			}
+			if (!Boolean.valueOf(((JavascriptExecutor) d).executeScript("return angular.element(document).injector() !== undefined").toString())) {
+				throw new NotDefinedException("Injector not defined");
+			}
+			return Boolean.valueOf(((JavascriptExecutor) d).executeScript("return angular.element(document).injector().get('$http').pendingRequests.length === 0").toString());
+		};
 	}
 
 	/**
@@ -95,8 +96,7 @@ public class EventWebDriver extends EventFiringWebDriver {
 	 * @return true or false.
 	 */
 	public ExpectedCondition<Boolean> jsLoadFinished() {
-		return arg0 -> this
-				.executeScript("return document.readyState").toString().equalsIgnoreCase("complete");
+		return d -> ((JavascriptExecutor) d).executeScript("return document.readyState").toString().equalsIgnoreCase("complete");
 	}
 
 	/**
@@ -105,8 +105,7 @@ public class EventWebDriver extends EventFiringWebDriver {
 	 * @return true or false.
 	 */
 	public ExpectedCondition<Boolean> loadEventFinished() {
-		return arg0 -> Boolean.valueOf(this
-				.executeScript("return performance.timing.loadEventEnd !== 0").toString());
+		return d -> Boolean.valueOf(((JavascriptExecutor) d).executeScript("return performance.timing.loadEventEnd !== 0").toString());
 	}
 	
 	/**
@@ -128,7 +127,7 @@ public class EventWebDriver extends EventFiringWebDriver {
 			d.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 			d.addListener(Network.responseReceived(), resp -> {
 				if (resp.getResponse().getStatus() >= 400 && resp.getResponse().getStatus() < 600) {
-					logger.error("{} {} {}", resp.getResponse().getStatus(), resp.getType(), resp.getResponse().getUrl());
+					logger.error("Response Error:\nName: {}\nHTTP Status: {}\nType: {}", resp.getResponse().getUrl(), resp.getResponse().getStatus(), resp.getType());
 				}
 			});
 			logger.info("Capturing HTTP status code 4XX and 5XX responses start.");
@@ -220,10 +219,20 @@ public class EventWebDriver extends EventFiringWebDriver {
 		});
 	}
 	
+	/**
+	 * Click element using javascript instead of webdriver method.
+	 * 
+	 * @param element
+	 */
 	public void clickUsingScript(WebElement element) {
 		executeScript("arguments[0].click();", element);
 	}
 	
+	/**
+	 * Get name of switched frame/iframe.
+	 * 
+	 * @return frame name
+	 */
 	public String getCurrentFrameName() {
 		try {
 			return executeScript("return window.frameElement.name").toString();
@@ -235,6 +244,9 @@ public class EventWebDriver extends EventFiringWebDriver {
 		}
 	}
 	
+	/**
+	 * Scroll to (0, 0)
+	 */
 	public void scrollToTop() {
 		executeScript("window.scrollTo(0, 0)");
 	}

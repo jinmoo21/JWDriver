@@ -26,6 +26,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Listeners;
 
@@ -59,12 +60,21 @@ public class Configuration implements IAnnotationTransformer {
 		annotation.setRetryAnalyzer(TestListener.class);
 	}
 	
+	/**
+	 * To use AbstractDriverOptions, override this method in class and overload getWebDriver().
+	 */
 	@BeforeSuite
 	public void beforeSuite() {
 		driver = new EventWebDriver(WebDriverFactory.getWebDriver());
-		explicitlyWait = new WebDriverWait(driver, Duration.ofSeconds(Util.AJAX_TIMEOUT));
-		mainWindow = driver.getWindowHandle();
-		driver.manage().window().maximize();
+	}
+	
+	@BeforeTest
+	public void beforeTest() {
+		Optional.ofNullable(driver).ifPresent(d -> {
+			explicitlyWait = new WebDriverWait(d, Duration.ofSeconds(Util.AJAX_TIMEOUT));
+			mainWindow = d.getWindowHandle();
+			d.manage().window().maximize();
+		});
 	}
 
 	@BeforeMethod

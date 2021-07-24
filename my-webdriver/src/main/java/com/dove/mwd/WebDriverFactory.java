@@ -20,21 +20,21 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class WebDriverFactory {
 	public static WebDriver getWebDriver() throws MalformedURLException {
-		switch (Util.browser) {
+		switch (Utils.browser) {
 		case "edge":
 			WebDriverManager.edgedriver().setup();
-			return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), new EdgeOptions()) :
+			return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), new EdgeOptions()) :
 				new EdgeDriver();
 		case "ie":
 			WebDriverManager.iedriver().setup();
-			return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), new InternetExplorerOptions()) :
+			return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), new InternetExplorerOptions()) :
 				new InternetExplorerDriver();
 		case "safari":
-			return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), new SafariOptions()) :
+			return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), new SafariOptions()) :
 				new SafariDriver();
 		default:
 			WebDriverManager.chromedriver().setup();
-			return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), new ChromeOptions()) :
+			return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), new ChromeOptions()) :
 				new ChromeDriver();
 		}
 	}
@@ -44,33 +44,33 @@ public class WebDriverFactory {
 		case "edge":
 			WebDriverManager.edgedriver().setup();
 			if (options instanceof EdgeOptions) {
-				return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), (EdgeOptions) options) :
+				return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), (EdgeOptions) options) :
 					new EdgeDriver((EdgeOptions) options);
 			}
-			return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), new EdgeOptions()) :
+			return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), new EdgeOptions()) :
 				new EdgeDriver();
 		case "ie":
 			WebDriverManager.iedriver().setup();
 			if (options instanceof InternetExplorerOptions) {
-				return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), (InternetExplorerOptions) options) :
+				return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), (InternetExplorerOptions) options) :
 					new InternetExplorerDriver((InternetExplorerOptions) options);
 			}
-			return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), new InternetExplorerOptions()) :
+			return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), new InternetExplorerOptions()) :
 				new InternetExplorerDriver();
 		case "safari":
 			if (options instanceof SafariOptions) {
-				return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), (SafariOptions) options) :
+				return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), (SafariOptions) options) :
 					new SafariDriver((SafariOptions) options);
 			}
-			return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), new SafariOptions()) :
+			return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), new SafariOptions()) :
 				new SafariDriver();
 		default:
 			WebDriverManager.chromedriver().setup();
 			if (options instanceof ChromeOptions) {
-				return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), (ChromeOptions) options) :
+				return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), (ChromeOptions) options) :
 					new ChromeDriver((ChromeOptions) options);
 			}
-			return Util.isRemote ? new RemoteWebDriver(new URL(Util.remoteAddress), new ChromeOptions()) :
+			return Utils.isRemote ? new RemoteWebDriver(new URL(Utils.remoteAddress), new ChromeOptions()) :
 				new ChromeDriver();
 		}
 	}

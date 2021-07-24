@@ -10,8 +10,8 @@ import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Util {
-	private static final Logger logger = LoggerFactory.getLogger(Util.class);
+public class Utils {
+	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 	public static final int AJAX_TIMEOUT = 5;
 	public static final int RETRY_COUNT = 2;
 	public static final String SCREENSHOT_FOLDER = new File("screenshots").getAbsolutePath();

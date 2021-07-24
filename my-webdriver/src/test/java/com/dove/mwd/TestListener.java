@@ -81,8 +81,8 @@ public class TestListener implements ITestListener, IRetryAnalyzer {
 
 	@Override
 	public boolean retry(ITestResult result) {
-		if (++count <= Util.RETRY_COUNT) {
-			logger.info("{}: Retesting #{}/{}", result.getName(), count, Util.RETRY_COUNT);
+		if (++count <= Utils.RETRY_COUNT) {
+			logger.info("{}: Retesting #{}/{}", result.getName(), count, Utils.RETRY_COUNT);
 			return true;
 		}
 		return false;

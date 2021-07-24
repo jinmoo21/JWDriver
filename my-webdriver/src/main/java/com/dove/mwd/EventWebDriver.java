@@ -46,12 +46,12 @@ public class EventWebDriver extends EventFiringWebDriver {
 	 */
 	public void waitPageLoadFinished() {
 		try {
-			new WebDriverWait(this, Duration.ofSeconds(Util.AJAX_TIMEOUT)).until(jQueryLoadFinished());
+			new WebDriverWait(this, Duration.ofSeconds(Utils.AJAX_TIMEOUT)).until(jQueryLoadFinished());
 		} catch (NotDefinedException e) {
 			logger.warn("{}: {}", e.getMessage(), getCurrentUrl());
 		}
 		try {
-			new WebDriverWait(this, Duration.ofSeconds(Util.AJAX_TIMEOUT)).until(angularLoadFinished());
+			new WebDriverWait(this, Duration.ofSeconds(Utils.AJAX_TIMEOUT)).until(angularLoadFinished());
 		} catch (NotDefinedException e) {
 			logger.warn("{}: {}", e.getMessage(), getCurrentUrl());
 		}

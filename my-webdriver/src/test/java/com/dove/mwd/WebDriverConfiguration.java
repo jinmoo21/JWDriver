@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,8 +33,7 @@ import org.testng.annotations.Listeners;
 
 @SuppressWarnings("deprecation")
 @Listeners(TestListener.class)
-public class Configuration implements IAnnotationTransformer {
-	private final String screenshotPath = new File("screenshots").getAbsolutePath();
+public class WebDriverConfiguration implements IAnnotationTransformer {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	protected EventWebDriver driver;
 	protected WebDriverWait explicitlyWait;
@@ -50,7 +50,7 @@ public class Configuration implements IAnnotationTransformer {
 	 * To use RetryAnalyzer, add this code in 'testng.xml'.<br>
 	 * <br>
 	 * &nbsp;&nbsp;&lt;listeners&gt;<br>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;listener class-name="com.dove.mwd.Configuration" /&gt;<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;listener class-name="com.dove.mwd.WebDriverConfiguration" /&gt;<br>
 	 * &nbsp;&nbsp;&lt;/listeners&gt;
 	 * 
 	 */
@@ -65,13 +65,17 @@ public class Configuration implements IAnnotationTransformer {
 	 */
 	@BeforeSuite
 	public void beforeSuite() {
-		driver = new EventWebDriver(WebDriverFactory.getWebDriver());
+		try {
+			driver = new EventWebDriver(WebDriverFactory.getWebDriver());
+		} catch (MalformedURLException e) {
+			logger.error("{}", e.getMessage());
+		}
 	}
 	
 	@BeforeTest
 	public void beforeTest() {
 		Optional.ofNullable(driver).ifPresent(d -> {
-			explicitlyWait = new WebDriverWait(d, Duration.ofSeconds(Util.AJAX_TIMEOUT));
+			explicitlyWait = new WebDriverWait(d, Duration.ofSeconds(Utils.AJAX_TIMEOUT));
 			mainWindow = d.getWindowHandle();
 			d.manage().window().maximize();
 		});
@@ -88,13 +92,13 @@ public class Configuration implements IAnnotationTransformer {
 		if (!result.isSuccess()) {
 			TakesScreenshot scrshot = (TakesScreenshot) driver;
 			File scrFile = scrshot.getScreenshotAs(OutputType.FILE);
-			String fileName = screenshotPath + File.separator + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS ")) + result.getName() + ".png";
+			String fileName = Utils.SCREENSHOT_FOLDER + File.separator + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS ")) + result.getName() + ".png";
 			FileUtils.copyFile(scrFile, new File(fileName));
 		}
 	}
 	
 	@AfterSuite
 	public void afterSuite() {
-		Optional.ofNullable(driver).ifPresent(d -> d.quit());
+		Optional.ofNullable(driver).ifPresent(EventWebDriver::quit);
 	}
 }

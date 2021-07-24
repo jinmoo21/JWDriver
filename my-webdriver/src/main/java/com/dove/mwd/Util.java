@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Optional;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -14,7 +15,9 @@ public class Util {
 	public static final int AJAX_TIMEOUT = 5;
 	public static final int RETRY_COUNT = 2;
 	public static final String SCREENSHOT_FOLDER = new File("screenshots").getAbsolutePath();
-	public static boolean IS_ANDROID = true;
+	public static final String remoteAddress = System.getProperty("webdriver.remote");
+	public static final String browser = Optional.ofNullable(System.getProperty("webdriver.browser")).map(String::toLowerCase).orElse("");
+	public static final boolean isRemote = Optional.ofNullable(remoteAddress).isPresent();
 	
 	public static String executeCommand(String command) {
 		String result = "";

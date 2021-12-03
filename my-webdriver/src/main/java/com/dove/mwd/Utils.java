@@ -7,17 +7,18 @@ import java.io.InputStreamReader;
 import java.util.Optional;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class Utils {
-	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 	public static final int AJAX_TIMEOUT = 5;
 	public static final int RETRY_COUNT = 2;
 	public static final String SCREENSHOT_FOLDER = new File("screenshots").getAbsolutePath();
-	public static final String remoteAddress = System.getProperty("webdriver.remote");
-	public static final String browser = Optional.ofNullable(System.getProperty("webdriver.browser")).map(String::toLowerCase).orElse("");
-	public static final boolean isRemote = Optional.ofNullable(remoteAddress).isPresent();
+	public static final String ENVIRONMENT = Optional.ofNullable(System.getProperty("webdriver.env")).map(String::toLowerCase).orElse("");
+	public static final boolean IS_MOBILE = ENVIRONMENT.equalsIgnoreCase("android") || ENVIRONMENT.equalsIgnoreCase("ios");
+	public static final String REMOTE_ADDRESS = System.getProperty("webdriver.remote");
+	public static final boolean IS_REMOTE = Optional.ofNullable(REMOTE_ADDRESS).isPresent();
 	
 	public static String executeCommand(String command) {
 		String result = "";
@@ -31,7 +32,7 @@ public class Utils {
 				result += temp + "\n";
 			}
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			log.error(e.getMessage());
 		}
 		return result;
 	}

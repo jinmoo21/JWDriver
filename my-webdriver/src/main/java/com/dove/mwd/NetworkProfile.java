@@ -1,6 +1,15 @@
 package com.dove.mwd;
 
-// Download Speed(Kbps), Upload Speed(Kbps), Latency(ms), Packet Loss(%)
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+/**
+ * Download Speed(Kbps) 
+ * Upload Speed(Kbps) 
+ * Latency(ms) 
+ * Packet Loss(%)
+ */
+@AllArgsConstructor
 public enum NetworkProfile {
 	OFFLINE("offline", 0, 0, 0),
 	// 2g-gprs-good: 50, 30, 500, 1
@@ -34,18 +43,15 @@ public enum NetworkProfile {
 	// 4g-lte-advanced-good: 25000, 18000, 80, 0
 	LOSSY_4G_ADVANCED_LTE("lossy_4g_lte_advanced", 15000 * 1000 * .99, 10000 * 1000 * .99, 70);
 	
+	@Getter
 	private String value;
+	@Getter
 	private Number download;
+	@Getter
 	private Number upload;
+	@Getter
 	private Number latency;
-	
-	NetworkProfile(String value, Number download, Number upload, Number latency) {
-		this.value = value;
-		this.download = download;
-		this.upload = upload;
-		this.latency = latency;
-	}
-	
+
 	public boolean isOffine() {
 		return value.equalsIgnoreCase("offline");
 	}
@@ -80,21 +86,5 @@ public enum NetworkProfile {
 	
 	public boolean is4G() {
 		return value.endsWith("4g_lte") || value.endsWith("4g_lte_advanced");
-	}
-	
-	public String getValue() {
-		return value;
-	}
-	
-	public Number getDownload() {
-		return download;
-	}
-	
-	public Number getUpload() {
-		return upload;
-	}
-	
-	public Number getLatency() {
-		return latency;
 	}
 }

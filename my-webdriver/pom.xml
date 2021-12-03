@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>4.0.0-beta-4</version>
+			<version>4.1.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
 		<dependency>
@@ -37,12 +37,24 @@
 			<artifactId>webdrivermanager</artifactId>
 			<version>4.4.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.appium/java-client -->
+		<dependency>
+   			<groupId>io.appium</groupId>
+   			<artifactId>java-client</artifactId>
+    		<version>8.0.0-beta</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>3.19.0</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<properties>
@@ -61,16 +73,26 @@
 					<encoding>UTF-8</encoding>
 					<systemPropertyVariables>
 						<!-- SYSTEM PROPERTY HERE 
-						<webdriver.browser>${webdriver.browser}</webdriver.browser>
+						<webdriver.env>Android</webdriver.env>
+						<webdriver.remote>http://localhost:4723/wd/hub</webdriver.remote>
 						<testrail.url>${testrail.url}</testrail.url> 
 						<testrail.id>${testrail.id}</testrail.id>
-						<testrail.pw>${testrail.pw}</testrail.pw> -->
+						<testrail.pw>${testrail.pw}</testrail.pw> 
+						-->
 					</systemPropertyVariables>
 					<suiteXmlFiles>
 						<suiteXmlFile>${suite}.xml</suiteXmlFile>
 					</suiteXmlFiles>
 				</configuration>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>9</source>
+                    <target>9</target>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 </project>

@@ -4,7 +4,10 @@ import java.util.Optional;
 
 import com.gurock.testrail.APIClient;
 
+import lombok.Getter;
+
 public class TestRailManager {
+	@Getter
 	private APIClient client;
 
 	public TestRailManager() {
@@ -13,9 +16,5 @@ public class TestRailManager {
 			client.setUser(System.getProperty("testrail.id"));
 			client.setPassword(System.getProperty("testrail.pw"));
 		});
-	}
-	
-	public APIClient getClient() {
-		return client;
 	}
 }

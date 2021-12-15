@@ -55,7 +55,7 @@ public class TestAssist implements IAnnotationTransformer {
 	protected WebDriverWait explicitlyWait;
 	protected String mainWindow;
 	protected SoftAssertions softly;
-	
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
 	public @interface TestRail {
@@ -70,7 +70,6 @@ public class TestAssist implements IAnnotationTransformer {
 	 * &nbsp;&nbsp;&lt;/listeners&gt;
 	 * 
 	 */
-	@SuppressWarnings("rawtypes") 
 	@Override
 	public void transform(ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
 		annotation.setRetryAnalyzer(TestListener.class);
@@ -85,21 +84,21 @@ public class TestAssist implements IAnnotationTransformer {
 			@org.testng.annotations.Optional("") String appActivity,
 			@org.testng.annotations.Optional("real") String phase) {
 		try {
-			Optional.ofNullable(device).map(DeviceInfo::getCapabilities).ifPresent(c -> {
+			Optional.ofNullable(device).ifPresent(d -> {
 				if (app.isEmpty()) { // Mobile Web
-					c.setCapability("browserName", device.isAndroid() ? "Chrome" : " Safari");
+					d.getCapabilities().setCapability("browserName", (d.isAndroid() ? "Chrome" : " Safari"));
 				} else { // Mobile Application
-					c.setCapability((device.isAndroid() ? "appPackage" : "bundleId"), app);
-					if (device.isAndroid()) { // MainActivity
-						c.setCapability("appActivity", appActivity);
+					d.getCapabilities().setCapability((d.isAndroid() ? "appPackage" : "bundleId"), app);
+					if (d.isAndroid()) { // MainActivity
+						d.getCapabilities().setCapability("appActivity", appActivity);
 					}
 				}
 			});
-			driver = new EventFiringDecorator(new WebDriverEventListener()).decorate(device == null ? WebDriverFactory.getWebDriver() :
-				WebDriverFactory.getWebDriver(device.getCapabilities()));
-			System.out.println(Utils.IS_REMOTE);
-			if (driver instanceof ChromeDriver) {
-				devtools = ((ChromeDriver) driver).getDevTools();
+			WebDriver original = device == null ? WebDriverFactory.getWebDriver(/* options here */) :
+					WebDriverFactory.getWebDriver(device.getCapabilities());
+			driver = new EventFiringDecorator(new WebDriverEventListener()).decorate(original);
+			if (original instanceof ChromeDriver) {
+				devtools = ((ChromeDriver) original).getDevTools();
 				devtools.createSession();
 				log.info("DevTools session created.");
 			}
@@ -177,8 +176,8 @@ public class TestAssist implements IAnnotationTransformer {
 	/**
 	 * Add custom header.
 	 * 
-	 * @param Header key.
-	 * @param Header value.
+	 * @param key header key
+	 * @param value header value
 	 */
 	public void addExtraHeader(String key, Object value) {
 		Optional.ofNullable(devtools).ifPresent(d -> {
@@ -202,9 +201,9 @@ public class TestAssist implements IAnnotationTransformer {
 	/**
 	 * Set Fake GPS.
 	 * 
-	 * @param latitude
-	 * @param longitude
-	 * @param accuracy
+	 * @param latitude latitude
+	 * @param longitude longitude
+	 * @param accuracy accuracy
 	 */
 	public void setGeolocation(Number latitude, Number longitude, Number accuracy) {
 		Optional.ofNullable(devtools).ifPresent(d -> {
@@ -229,13 +228,20 @@ public class TestAssist implements IAnnotationTransformer {
 	/**
 	 * Set network emulation.
 	 * 
-	 * @param profile
+	 * @param profile profile
 	 */
 	public void setNetworkEmulation(NetworkProfile profile) {
 		Optional.ofNullable(devtools).ifPresent(d -> {
 			d.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 			d.send(Network.emulateNetworkConditions(profile.isOffine(), profile.getLatency(), profile.getDownload(), profile.getUpload(), Optional.of(ConnectionType.OTHER)));
 			log.info("Network emulation start: {}", profile.getValue());
+		});
+	}
+
+	public void setUserAgent(String userAgent) {
+		Optional.ofNullable(devtools).ifPresent(d -> {
+			d.send(Network.setUserAgentOverride(userAgent, Optional.empty(), Optional.empty(), Optional.empty()));
+			log.info("UserAgent overrided: {}", userAgent);
 		});
 	}
 	
@@ -324,7 +330,7 @@ public class TestAssist implements IAnnotationTransformer {
 	/**
 	 * Click element using javascript instead of webdriver method.
 	 * 
-	 * @param element
+	 * @param element element
 	 */
 	public void clickUsingScript(WebElement element) {
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
